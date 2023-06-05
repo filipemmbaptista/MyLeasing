@@ -37,9 +37,25 @@ namespace MyLeasing.Common.Data.Entities
         [MaxLength(100)]
         public string Address { get; set; }
 
-        [Display(Name = "Owner Name")]
+        [Display(Name ="Image")]
+        public string ImageUrl { get; set; }
+
+        [Display(Name ="Owner Name")]
         public string OwnerName { get { return $"{FirstName} {LastName}"; } }
 
         public User User { get; set; }
+
+        public string ImageFullPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ImageUrl))
+                {
+                    return null;
+                }
+
+                return $"https://localhost:44320{ImageUrl.Substring(1)}";
+            }
+        }
     }
 }

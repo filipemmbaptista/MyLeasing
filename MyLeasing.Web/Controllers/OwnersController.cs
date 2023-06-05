@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using MyLeasing.Common.Data;
 using MyLeasing.Common.Data.Entities;
 using MyLeasing.Common.Helpers;
+using MyLeasing.Common.Models;
 
 namespace MyLeasing.Web.Controllers
 {
@@ -15,11 +17,15 @@ namespace MyLeasing.Web.Controllers
     {
         private readonly IOwnerRepository _ownerRepository;
         private readonly IUserHelper _userHelper;
+        private readonly IImageHelper _imageHelper;
+        private readonly IConverterHelper _converterHelper;
 
-        public OwnersController(IOwnerRepository ownerRepository, IUserHelper userHelper)
+        public OwnersController(IOwnerRepository ownerRepository, IUserHelper userHelper, IImageHelper imageHelper, IConverterHelper converterHelper)
         {
             _ownerRepository = ownerRepository;
             _userHelper = userHelper;
+            _imageHelper = imageHelper;
+            _converterHelper = converterHelper;
         }
 
         // GET: Owners
@@ -56,16 +62,29 @@ namespace MyLeasing.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Owner owner)
+        public async Task<IActionResult> Create(OwnerViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var path = string.Empty;
+
+                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                {
+                    path = await _imageHelper.UploadImageAsync(model.ImageFile, "owners");
+                }
+                else
+                {
+                    path = $"~/images/default.jpg";
+                }
+
+                var owner = _converterHelper.ToOwner(model, path, true);
+
                 //TODO: Change for the user that is logged in
-                owner.User = await _userHelper.GetUserByEmailAsync("primeHSRS33LE60@gmail.com".ToLower());
+                owner.User = await _userHelper.GetUserByEmailAsync("prime.HSRS33LE60@gmail.com".ToLower());
                 await _ownerRepository.CreateAsync(owner);
                 return RedirectToAction(nameof(Index));
             }
-            return View(owner);
+            return View(model);
         }
 
         // GET: Owners/Edit/5
@@ -81,7 +100,9 @@ namespace MyLeasing.Web.Controllers
             {
                 return NotFound();
             }
-            return View(owner);
+
+            var model = _converterHelper.ToOwnerViewModel(owner);
+            return View(model);
         }
 
         // POST: Owners/Edit/5
@@ -89,19 +110,32 @@ namespace MyLeasing.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Owner owner)
+        public async Task<IActionResult> Edit(OwnerViewModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var path = model.ImageUrl;
+
+                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    {
+                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "owners");
+                    }
+                    else
+                    {
+                        path = $"~/images/default.jpg";
+                    }
+
+                    var owner = _converterHelper.ToOwner(model, path, false);
+
                     //TODO: Change for the user that is logged in
-                    owner.User = await _userHelper.GetUserByEmailAsync("primeHSRS33LE60@gmail.com".ToLower());
+                    owner.User = await _userHelper.GetUserByEmailAsync("prime.HSRS33LE60@gmail.com".ToLower());
                     await _ownerRepository.UpdateAsync(owner);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _ownerRepository.ExistAsync(owner.Id))
+                    if (!await _ownerRepository.ExistAsync(model.Id))
                     {
                         return NotFound();
                     }
@@ -112,7 +146,7 @@ namespace MyLeasing.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(owner);
+            return View(model);
         }
 
         // GET: Owners/Delete/5
