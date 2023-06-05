@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyLeasing.Common.Data;
 using MyLeasing.Common.Data.Entities;
+using MyLeasing.Common.Helpers;
 
 namespace MyLeasing.Web.Controllers
 {
     public class OwnersController : Controller
     {
         private readonly IOwnerRepository _ownerRepository;
+        private readonly IUserHelper _userHelper;
 
-        public OwnersController(IOwnerRepository ownerRepository)
+        public OwnersController(IOwnerRepository ownerRepository, IUserHelper userHelper)
         {
             _ownerRepository = ownerRepository;
+            _userHelper = userHelper;
         }
 
         // GET: Owners
@@ -57,6 +60,8 @@ namespace MyLeasing.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                //TODO: Change for the user that is logged in
+                owner.User = await _userHelper.GetUserByEmailAsync("primeHSRS33LE60@gmail.com".ToLower());
                 await _ownerRepository.CreateAsync(owner);
                 return RedirectToAction(nameof(Index));
             }
@@ -90,6 +95,8 @@ namespace MyLeasing.Web.Controllers
             {
                 try
                 {
+                    //TODO: Change for the user that is logged in
+                    owner.User = await _userHelper.GetUserByEmailAsync("primeHSRS33LE60@gmail.com".ToLower());
                     await _ownerRepository.UpdateAsync(owner);
                 }
                 catch (DbUpdateConcurrencyException)
