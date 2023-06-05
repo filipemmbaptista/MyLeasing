@@ -13,6 +13,8 @@ namespace MyLeasing.Common.Data
     {
         public DbSet<Owner> Owners { get; set; }
 
+        public DbSet<Lessee> Lessee { get; set; }
+
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
     }
 }

@@ -47,6 +47,16 @@ namespace MyLeasing.Common.Data
                 await AddOwner("TFDHURYG23", "Ricardo", "Salgado", $"Street default, nº28");
                 await _context.SaveChangesAsync();
             }
+
+            if (!_context.Lessee.Any())
+            {
+                await AddLessee("HJKB34E21N", "Daniel", "Nicolau", $"Street default, nº17");
+                await AddLessee("34IOUBH2S2", "Ricardo", "Saraiva", $"Street default, nº91");
+                await AddLessee("FVDG98S7HY", "Hugo", "Sousa", $"Street default, nº7");
+                await AddLessee("45C78NVT9D", "Guilherme", "Casanova", $"Street default, nº25");
+                await AddLessee("F547N89YMD", "Celinia", "Texas", $"Street default, nº3");
+                await _context.SaveChangesAsync();
+            }
         }
 
         private async Task AddOwner(string doc, string fname, string lname, string address)
@@ -58,6 +68,24 @@ namespace MyLeasing.Common.Data
             }
 
             _context.Owners.Add(new Owner
+            {
+                Document = doc,
+                FirstName = fname,
+                LastName = lname,
+                User = user,
+                Address = address
+            });
+        }
+
+        private async Task AddLessee(string doc, string fname, string lname, string address)
+        {
+            var user = await _userHelper.GetUserByEmailAsync($"{fname}.{doc}@gmail.com".ToLower());
+            if (user == null)
+            {
+                user = await AddUser(doc, fname, lname, address);
+            }
+
+            _context.Lessee.Add(new Lessee
             {
                 Document = doc,
                 FirstName = fname,

@@ -13,5 +13,9 @@ namespace MyLeasing.Common.Helpers
         Owner ToOwner(OwnerViewModel model, string path, bool isNew);
 
         OwnerViewModel ToOwnerViewModel(Owner owner);
+
+        Lessee ToLessee(LesseeViewModel model, string path, bool isNew);
+
+        LesseeViewModel ToLesseeViewModel(Lessee lessee);
     }
 }

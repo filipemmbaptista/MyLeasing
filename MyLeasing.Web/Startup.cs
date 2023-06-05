@@ -51,6 +51,7 @@ namespace MyLeasing.Web
             services.AddScoped<IConverterHelper, ConverterHelper>();
 
             services.AddScoped<IOwnerRepository, OwnerRepository>();
+            services.AddScoped<ILesseeRepository, LesseeRepository>();
 
             services.AddControllersWithViews();
         }

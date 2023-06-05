@@ -10,6 +10,38 @@ namespace MyLeasing.Common.Helpers
 {
     public class ConverterHelper : IConverterHelper
     {
+        public Lessee ToLessee(LesseeViewModel model, string path, bool isNew)
+        {
+            return new Lessee
+            {
+                Id = isNew ? 0 : model.Id,
+                ImageUrl = path,
+                Document = model.Document,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Address = model.Address,
+                FixedPhone = model.FixedPhone,
+                CellPhone = model.CellPhone,
+                User = model.User,
+            };
+        }
+
+        public LesseeViewModel ToLesseeViewModel(Lessee lessee)
+        {
+            return new LesseeViewModel
+            {
+                Id = lessee.Id,
+                ImageUrl = lessee.ImageUrl,
+                Document = lessee.Document,
+                FirstName = lessee.FirstName,
+                LastName = lessee.LastName,
+                Address = lessee.Address,
+                FixedPhone = lessee.FixedPhone,
+                CellPhone = lessee.CellPhone,
+                User = lessee.User,
+            };
+        }
+
         public Owner ToOwner(OwnerViewModel model, string path, bool isNew)
         {
             return new Owner
