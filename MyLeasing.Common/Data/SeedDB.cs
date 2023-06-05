@@ -27,7 +27,7 @@ namespace MyLeasing.Common.Data
         {
             await _context.Database.EnsureCreatedAsync();
 
-            var user = await _userHelper.GetUserByEmailAsync("primeHSRS33LE60@gmail.com".ToLower());
+            var user = await _userHelper.GetUserByEmailAsync("prime.HSRS33LE60@gmail.com".ToLower());
             if (user == null)
             {
                 user = await AddUser("HSRS33LE60", "Prime", "Admin", "Street default, nº3");
